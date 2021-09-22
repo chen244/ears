@@ -192,7 +192,8 @@ extern "C" {
     pub fn sf_format_check(info: *mut SndInfo) -> SF_BOOL;
 
     pub fn sf_seek(sndfile: SNDFILEhandle, frames: i64, whence: i32) -> i64;
-    pub fn sf_command(sndfile: SNDFILEhandle, cmd: i32, data: *mut c_void, datasize: i32) -> Errors;
+    pub fn sf_command(sndfile: SNDFILEhandle, cmd: i32, data: *mut c_void, datasize: i32)
+        -> Errors;
 
     pub fn sf_error(sndfile: SNDFILEhandle) -> Errors;
     pub fn sf_strerror(sndfile: SNDFILEhandle) -> *mut c_char;
