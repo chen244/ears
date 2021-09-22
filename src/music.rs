@@ -149,7 +149,7 @@ fn fill_buffer(
 
     // Modulo on new cursor position to wrap around if we're looping
     if is_looping {
-        new_cursor_position = new_cursor_position % frames;
+        new_cursor_position %= frames;
     }
 
     cursor.store(new_cursor_position, Ordering::Relaxed);
@@ -249,7 +249,7 @@ impl Music {
             sample_to_read: 50000 * (infos.channels as i64),
             file_infos: infos,
             sample_format: format,
-            sound_tags: sound_tags,
+            sound_tags,
             cursor: Arc::new(AtomicI64::new(0)),
             state: Initial,
             is_looping: false,
@@ -259,7 +259,7 @@ impl Music {
         })
     }
 
-    fn process_music(&mut self) -> () {
+    fn process_music(&mut self)  {
         let (chan, port) = channel();
         let sample_t_r = self.sample_to_read;
         let sample_rate = self.file_infos.samplerate;
@@ -315,7 +315,7 @@ impl Music {
         self.offset_sender = Some(offset_sender);
 
         let cursor = self.cursor.clone();
-        let is_looping_clone = self.is_looping.clone();
+        let is_looping_clone = self.is_looping;
 
         let thread = thread::Builder::new().name(String::from("ears-music"));
         self.thread_handle = Some(
@@ -414,13 +414,12 @@ impl AudioController for Music {
     /**
      * Play or resume the Music.
      */
-    fn play(&mut self) -> () {
-        check_openal_context!(());
+    fn play(&mut self) {
+        check_openal_context!();
 
         match self.get_state() {
             Paused => {
                 al::alSourcePlay(self.al_source);
-                return;
             }
             _ => {
                 if self.is_playing() {
@@ -437,8 +436,8 @@ impl AudioController for Music {
     /**
      * Pause the Music.
      */
-    fn pause(&mut self) -> () {
-        check_openal_context!(());
+    fn pause(&mut self)  {
+        check_openal_context!();
 
         al::alSourcePause(self.al_source)
     }
@@ -446,8 +445,8 @@ impl AudioController for Music {
     /**
      * Stop the Music.
      */
-    fn stop(&mut self) -> () {
-        check_openal_context!(());
+    fn stop(&mut self)  {
+        check_openal_context!();
 
         al::alSourceStop(self.al_source);
     }
@@ -456,7 +455,7 @@ impl AudioController for Music {
      * Connect a ReverbEffect to the Music
      */
     fn connect(&mut self, reverb_effect: &Option<ReverbEffect>) {
-        check_openal_context!(());
+        check_openal_context!();
 
         match reverb_effect {
             Some(reverb_effect) => {
@@ -487,10 +486,7 @@ impl AudioController for Music {
      * True if the Music is playing, false otherwise.
      */
     fn is_playing(&self) -> bool {
-        match self.get_state() {
-            Playing => true,
-            _ => false,
-        }
+        matches!(self.get_state(), Playing) 
     }
 
     /**
@@ -519,7 +515,7 @@ impl AudioController for Music {
      * # Argument
      * * `offset` - The frame to seek to
      */
-    fn set_offset(&mut self, offset: i32) -> () {
+    fn set_offset(&mut self, offset: i32)  {
         match self.offset_sender {
             Some(ref sender) => {
                 sender.send(offset);
@@ -565,8 +561,8 @@ impl AudioController for Music {
      * # Argument
      * * `volume` - The volume of the Music, should be between 0.0 and 1.0
      */
-    fn set_volume(&mut self, volume: f32) -> () {
-        check_openal_context!(());
+    fn set_volume(&mut self, volume: f32)  {
+        check_openal_context!();
 
         al::alSourcef(self.al_source, ffi::AL_GAIN, volume);
     }
@@ -595,8 +591,8 @@ impl AudioController for Music {
      * * `min_volume` - The new minimal volume of the Music should be
      * between 0.0 and 1.0
      */
-    fn set_min_volume(&mut self, min_volume: f32) -> () {
-        check_openal_context!(());
+    fn set_min_volume(&mut self, min_volume: f32)  {
+        check_openal_context!();
 
         al::alSourcef(self.al_source, ffi::AL_MIN_GAIN, min_volume);
     }
@@ -625,8 +621,8 @@ impl AudioController for Music {
      * * `max_volume` - The new maximal volume of the Music should be
      * between 0.0 and 1.0
      */
-    fn set_max_volume(&mut self, max_volume: f32) -> () {
-        check_openal_context!(());
+    fn set_max_volume(&mut self, max_volume: f32)  {
+        check_openal_context!();
 
         al::alSourcef(self.al_source, ffi::AL_MAX_GAIN, max_volume);
     }
@@ -653,7 +649,7 @@ impl AudioController for Music {
      * # Arguments
      * `looping` - The new looping state.
      */
-    fn set_looping(&mut self, looping: bool) -> () {
+    fn set_looping(&mut self, looping: bool)  {
         if let Some(ref sender) = self.looping_sender {
             sender.send(looping);
         }
@@ -680,8 +676,8 @@ impl AudioController for Music {
      * # Argument
      * * `new_pitch` - The new pitch of the Music in the range [0.5 - 2.0]
      */
-    fn set_pitch(&mut self, pitch: f32) -> () {
-        check_openal_context!(());
+    fn set_pitch(&mut self, pitch: f32)  {
+        check_openal_context!();
 
         al::alSourcef(self.al_source, ffi::AL_PITCH, pitch)
     }
@@ -709,8 +705,8 @@ impl AudioController for Music {
      * `relative` - True to set Music relative to the listener false to set the
      * Music position absolute.
      */
-    fn set_relative(&mut self, relative: bool) -> () {
-        check_openal_context!(());
+    fn set_relative(&mut self, relative: bool)  {
+        check_openal_context!();
 
         match relative {
             true => al::alSourcei(
@@ -759,8 +755,8 @@ impl AudioController for Music {
      * * `position` - A three dimensional vector of f32 containing the position
      * of the listener [x, y, z].
      */
-    fn set_position(&mut self, position: [f32; 3]) -> () {
-        check_openal_context!(());
+    fn set_position(&mut self, position: [f32; 3])  {
+        check_openal_context!();
 
         al::alSourcefv(self.al_source, ffi::AL_POSITION, &position[0]);
     }
@@ -790,8 +786,8 @@ impl AudioController for Music {
      * # Argument
      * `direction` - The new direction of the Music.
      */
-    fn set_direction(&mut self, direction: [f32; 3]) -> () {
-        check_openal_context!(());
+    fn set_direction(&mut self, direction: [f32; 3])  {
+        //check_openal_context!();
 
         al::alSourcefv(self.al_source, ffi::AL_DIRECTION, &direction[0]);
     }
@@ -822,8 +818,8 @@ impl AudioController for Music {
      * # Argument
      * `max_distance` - The new maximum distance in the range [0.0, +inf]
      */
-    fn set_max_distance(&mut self, max_distance: f32) -> () {
-        check_openal_context!(());
+    fn set_max_distance(&mut self, max_distance: f32)  {
+        //check_openal_context!();
 
         al::alSourcef(self.al_source, ffi::AL_MAX_DISTANCE, max_distance);
     }
@@ -854,8 +850,8 @@ impl AudioController for Music {
      * # Argument
      * * `ref_distance` - The new reference distance of the Music.
      */
-    fn set_reference_distance(&mut self, ref_distance: f32) -> () {
-        check_openal_context!(());
+    fn set_reference_distance(&mut self, ref_distance: f32)  {
+        check_openal_context!();
 
         al::alSourcef(self.al_source, ffi::AL_REFERENCE_DISTANCE, ref_distance);
     }
@@ -889,8 +885,8 @@ impl AudioController for Music {
      * # Arguments
      * `attenuation` - The new attenuation for the Music in the range [0.0, 1.0].
      */
-    fn set_attenuation(&mut self, attenuation: f32) -> () {
-        check_openal_context!(());
+    fn set_attenuation(&mut self, attenuation: f32)  {
+        check_openal_context!();
 
         al::alSourcef(self.al_source, ffi::AL_ROLLOFF_FACTOR, attenuation);
     }
@@ -932,7 +928,7 @@ impl AudioController for Music {
      * # Argument
      * * `enabled` - true to enable direct channel mode, false to disable
      */
-    fn set_direct_channel(&mut self, enabled: bool) -> () {
+    fn set_direct_channel(&mut self, enabled: bool)  {
         if OpenAlData::direct_channel_capable() {
             let value = match enabled {
                 true => ffi::AL_TRUE,
@@ -985,7 +981,7 @@ impl AudioController for Music {
 
 impl Drop for Music {
     /// Destroy all the resources of the Music.
-    fn drop(&mut self) -> () {
+    fn drop(&mut self)  {
         self.stop();
         if let Some(handle) = self.thread_handle.take() {
             handle.join();
@@ -1008,14 +1004,14 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_create_OK() -> () {
+    fn music_create_OK()  {
         let msc = Music::new("res/shot.wav");
 
         assert!(msc.is_ok());
     }
 
     #[test]
-    fn music_create_FAIL() -> () {
+    fn music_create_FAIL()  {
         let msc = Music::new("toto.wav");
 
         assert!(msc.is_err());
@@ -1023,7 +1019,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_play_OK() -> () {
+    fn music_play_OK()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.play();
@@ -1033,7 +1029,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_pause_OK() -> () {
+    fn music_pause_OK()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.play();
@@ -1044,7 +1040,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_stop_OK() -> () {
+    fn music_stop_OK()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.play();
@@ -1055,7 +1051,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_is_playing_TRUE() -> () {
+    fn music_is_playing_TRUE()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.play();
@@ -1065,7 +1061,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_is_playing_FALSE() -> () {
+    fn music_is_playing_FALSE()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         assert_eq!(msc.is_playing(), false);
@@ -1074,7 +1070,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_volume_OK() -> () {
+    fn music_set_volume_OK()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_volume(0.7);
@@ -1083,7 +1079,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_min_volume_OK() -> () {
+    fn music_set_min_volume_OK()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_min_volume(0.1);
@@ -1092,7 +1088,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_max_volume_OK() -> () {
+    fn music_set_max_volume_OK()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_max_volume(0.9);
@@ -1101,7 +1097,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_is_looping_TRUE() -> () {
+    fn music_is_looping_TRUE()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_looping(true);
@@ -1110,7 +1106,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_is_looping_FALSE() -> () {
+    fn music_is_looping_FALSE()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_looping(false);
@@ -1119,7 +1115,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_pitch_OK() -> () {
+    fn music_set_pitch_OK()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_pitch(1.5);
@@ -1128,7 +1124,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_relative_TRUE() -> () {
+    fn music_set_relative_TRUE()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_relative(true);
@@ -1137,7 +1133,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_relative_FALSE() -> () {
+    fn music_set_relative_FALSE()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_relative(false);
@@ -1148,7 +1144,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_position_OK() -> () {
+    fn music_set_position_OK()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_position([50., 150., 250.]);
@@ -1158,7 +1154,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_direction_OK() -> () {
+    fn music_set_direction_OK()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_direction([50., 150., 250.]);
@@ -1168,7 +1164,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_max_distance() -> () {
+    fn music_set_max_distance()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_max_distance(70.);
@@ -1177,7 +1173,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_reference_distance() -> () {
+    fn music_set_reference_distance()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_reference_distance(70.);
@@ -1186,7 +1182,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn music_set_attenuation() -> () {
+    fn music_set_attenuation()  {
         let mut msc = Music::new("res/shot.wav").expect("Cannot create Music");
 
         msc.set_attenuation(0.5f32);

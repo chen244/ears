@@ -79,16 +79,16 @@ pub fn empty() -> Tags {
 
 pub fn get_sound_tags(file: &SndFile) -> Tags {
     Tags {
-        title: file.get_string(Title).unwrap_or("".to_string()),
-        copyright: file.get_string(Copyright).unwrap_or("".to_string()),
-        software: file.get_string(Software).unwrap_or("".to_string()),
-        artist: file.get_string(Artist).unwrap_or("".to_string()),
-        comment: file.get_string(Comment).unwrap_or("".to_string()),
-        date: file.get_string(Date).unwrap_or("".to_string()),
-        album: file.get_string(Album).unwrap_or("".to_string()),
-        license: file.get_string(License).unwrap_or("".to_string()),
-        track_number: file.get_string(TrackNumber).unwrap_or("".to_string()),
-        genre: file.get_string(Genre).unwrap_or("".to_string()),
+        title: file.get_string(Title).unwrap_or_else(|| "".to_string()),
+        copyright: file.get_string(Copyright).unwrap_or_else(|| "".to_string()),
+        software: file.get_string(Software).unwrap_or_else(|| "".to_string()),
+        artist: file.get_string(Artist).unwrap_or_else(|| "".to_string()),
+        comment: file.get_string(Comment).unwrap_or_else(|| "".to_string()),
+        date: file.get_string(Date).unwrap_or_else(|| "".to_string()),
+        album: file.get_string(Album).unwrap_or_else(|| "".to_string()),
+        license: file.get_string(License).unwrap_or_else(|| "".to_string()),
+        track_number: file.get_string(TrackNumber).unwrap_or_else(|| "".to_string()),
+        genre: file.get_string(Genre).unwrap_or_else(|| "".to_string()),
     }
 }
 

@@ -46,7 +46,7 @@ use record_context::RecordContext;
  * ```
  */
 pub fn init() -> Result<(), OpenAlContextError> {
-    return OpenAlData::check_al_context();
+    OpenAlData::check_al_context()
 }
 
 /**
@@ -64,7 +64,7 @@ pub fn init() -> Result<(), OpenAlContextError> {
  * ```
  */
 pub fn init_in() -> Result<RecordContext, OpenAlContextError> {
-    return OpenAlData::check_al_input_context();
+    OpenAlData::check_al_input_context()
 }
 
 #[cfg(test)]

@@ -307,7 +307,7 @@ impl SndFile {
         } else {
             Ok(SndFile {
                 handle: tmp_sndfile,
-                info: info,
+                info,
             })
         }
     }
@@ -340,7 +340,7 @@ impl SndFile {
         } else {
             Ok(SndFile {
                 handle: tmp_sndfile,
-                info: info,
+                info,
             })
         }
     }
@@ -379,7 +379,7 @@ impl SndFile {
         } else {
             Ok(SndFile {
                 handle: tmp_sndfile,
-                info: info,
+                info,
             })
         }
     }
@@ -400,7 +400,7 @@ impl SndFile {
     // TODO: maybe integrate some encoding crate to handle non-UTF-8 someday?
     pub fn get_string(&self, string_type: StringSoundType) -> Option<String> {
         let c_string = unsafe { ffi::sf_get_string(self.handle, string_type as i32) };
-        if c_string == ptr::null_mut() {
+        if c_string.is_null() {
             None
         } else {
             let cstr = unsafe { CStr::from_ptr(c_string as *const _) };
@@ -430,7 +430,7 @@ impl SndFile {
      *
      * Return true if the struct is valid, false otherwise.
      */
-    pub fn check_format<'r>(info: &'r mut SndInfo) -> bool {
+    pub fn check_format(info: &mut SndInfo) -> bool {
         match unsafe { ffi::sf_format_check(info) } {
             ffi::SF_TRUE => true,
             ffi::SF_FALSE => false,
@@ -455,7 +455,7 @@ impl SndFile {
      * function to force the writing of all file cache buffers to disk.
      * If the file is opened Read no action is taken.
      */
-    pub fn write_sync(&mut self) -> () {
+    pub fn write_sync(&mut self)  {
         unsafe { ffi::sf_write_sync(self.handle) }
     }
 
