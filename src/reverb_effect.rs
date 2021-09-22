@@ -254,7 +254,7 @@ impl ReverbEffect {
 
 impl Drop for ReverbEffect {
     // Delete the Effect Object and Auxiliary Effect Slot Object
-    fn drop(&mut self)  {
+    fn drop(&mut self) {
         check_openal_context!();
 
         // Disconnect the effect and slot

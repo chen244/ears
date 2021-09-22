@@ -87,7 +87,9 @@ pub fn get_sound_tags(file: &SndFile) -> Tags {
         date: file.get_string(Date).unwrap_or_else(|| "".to_string()),
         album: file.get_string(Album).unwrap_or_else(|| "".to_string()),
         license: file.get_string(License).unwrap_or_else(|| "".to_string()),
-        track_number: file.get_string(TrackNumber).unwrap_or_else(|| "".to_string()),
+        track_number: file
+            .get_string(TrackNumber)
+            .unwrap_or_else(|| "".to_string()),
         genre: file.get_string(Genre).unwrap_or_else(|| "".to_string()),
     }
 }

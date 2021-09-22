@@ -176,7 +176,7 @@ impl AudioTags for SoundData {
 
 impl Drop for SoundData {
     /// Destroy all the resources attached to the SoundData
-    fn drop(&mut self)  {
+    fn drop(&mut self) {
         unsafe {
             ffi::alDeleteBuffers(1, &mut self.al_buffer);
         }
@@ -192,7 +192,7 @@ mod test {
 
     #[test]
     #[ignore]
-    fn sounddata_create_OK()  {
+    fn sounddata_create_OK() {
         #![allow(unused_variables)]
         let snd_data = SoundData::new("res/shot.wav").unwrap();
     }
@@ -200,7 +200,7 @@ mod test {
     #[test]
     #[ignore]
     #[should_panic]
-    fn sounddata_create_FAIL()  {
+    fn sounddata_create_FAIL() {
         #![allow(unused_variables)]
         let snd_data = SoundData::new("toto.wav").unwrap();
     }

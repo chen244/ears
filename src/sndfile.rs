@@ -110,9 +110,9 @@ pub enum Error {
 /// * SeekEnd - The offset is set to the end of the data plus offset (multichannel) frames.
 #[derive(Copy, Clone)]
 pub enum SeekMode {
-    SeekSet = ffi::SEEK_SET as isize,
-    SeekCur = ffi::SEEK_CUR as isize,
-    SeekEnd = ffi::SEEK_END as isize,
+    Set = ffi::SEEK_SET as isize,
+    Cur = ffi::SEEK_CUR as isize,
+    End = ffi::SEEK_END as isize,
 }
 
 /// Enum who contains the list of the supported audio format
@@ -455,7 +455,7 @@ impl SndFile {
      * function to force the writing of all file cache buffers to disk.
      * If the file is opened Read no action is taken.
      */
-    pub fn write_sync(&mut self)  {
+    pub fn write_sync(&mut self) {
         unsafe { ffi::sf_write_sync(self.handle) }
     }
 

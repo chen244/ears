@@ -202,7 +202,7 @@ extern "C" {
     pub fn sf_error_str(sndfile: SNDFILEhandle, string: *mut c_char, len: i64);
 
     pub fn sf_close(sndfile: SNDFILEhandle) -> Error;
-    pub fn sf_write_sync(sndfile: SNDFILEhandle) ;
+    pub fn sf_write_sync(sndfile: SNDFILEhandle);
 
     pub fn sf_read_short(sndfile: SNDFILEhandle, ptr: *mut i16, items: i64) -> i64;
     pub fn sf_read_int(sndfile: SNDFILEhandle, ptr: *mut i32, items: i64) -> i64;
