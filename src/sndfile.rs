@@ -95,7 +95,7 @@ pub enum StringSoundType {
 /// Types of error who can be return by API functions
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub enum Error {
+pub enum Errors {
     NoError = ffi::SF_ERR_NO_ERROR as isize,
     UnrecognizedFormat = ffi::SF_ERR_UNRECOGNISED_FORMAT as isize,
     SystemError = ffi::SF_ERR_SYSTEM as isize,
@@ -171,7 +171,7 @@ pub enum SeekMode {
 /// * EndianCpu - Force CPU endian-ness
 #[repr(C)]
 #[derive(Debug, Clone, PartialOrd, PartialEq, Copy)]
-pub enum FormatType {
+pub enum FormatTypes {
     FormatWav = ffi::SF_FORMAT_WAV as isize,
     FormatAiff = ffi::SF_FORMAT_AIFF as isize,
     FormatAu = ffi::SF_FORMAT_AU as isize,
@@ -228,9 +228,9 @@ pub enum FormatType {
     FormatTypeMask = ffi::SF_FORMAT_TYPEMASK as isize,
 }
 
-impl BitOr for FormatType {
-    type Output = FormatType;
-    fn bitor(self, _rhs: FormatType) -> Self::Output {
+impl BitOr for FormatTypes {
+    type Output = FormatTypes;
+    fn bitor(self, _rhs: FormatTypes) -> Self::Output {
         unsafe { transmute((self as i32) | (_rhs as i32)) }
     }
     //fn bitor(self, rhs: RHS) -> Self::Output;
@@ -417,7 +417,7 @@ impl SndFile {
      *
      * Return NoError on success, an other error code otherwise
      */
-    pub fn set_string(&mut self, string_type: StringSoundType, string: String) -> Error {
+    pub fn set_string(&mut self, string_type: StringSoundType, string: String) -> Errors {
         //let c_string = CString::new(string).unwrap();
         unsafe { ffi::sf_set_string(self.handle, string_type as i32, string.as_ptr() as *mut _) }
     }
@@ -446,7 +446,7 @@ impl SndFile {
      *
      * Return NoError if destruction success, an other error code otherwise.
      */
-    pub fn close(&self) -> Error {
+    pub fn close(&self) -> Errors {
         unsafe { ffi::sf_close(self.handle) }
     }
 
@@ -676,7 +676,7 @@ impl SndFile {
      *
      * Return the last error as a variant of the enum Error.
      */
-    pub fn error(&self) -> Error {
+    pub fn error(&self) -> Errors {
         unsafe { ffi::sf_error(self.handle) }
     }
 
@@ -699,7 +699,7 @@ impl SndFile {
      *
      * Return an owned str containing the error.
      */
-    pub fn error_number(error_num: Error) -> String {
+    pub fn error_number(error_num: Errors) -> String {
         unsafe {
             from_utf8(CStr::from_ptr(ffi::sf_error_number(error_num as i32) as *const _).to_bytes())
                 .unwrap()

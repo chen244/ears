@@ -21,7 +21,7 @@
 
 #![allow(dead_code, non_camel_case_types)]
 
-use super::{Error, SndInfo};
+use super::{Errors, SndInfo};
 use libc::{c_char, c_void, intptr_t};
 
 pub type SF_MODE = i32;
@@ -192,16 +192,16 @@ extern "C" {
     pub fn sf_format_check(info: *mut SndInfo) -> SF_BOOL;
 
     pub fn sf_seek(sndfile: SNDFILEhandle, frames: i64, whence: i32) -> i64;
-    pub fn sf_command(sndfile: SNDFILEhandle, cmd: i32, data: *mut c_void, datasize: i32) -> Error;
+    pub fn sf_command(sndfile: SNDFILEhandle, cmd: i32, data: *mut c_void, datasize: i32) -> Errors;
 
-    pub fn sf_error(sndfile: SNDFILEhandle) -> Error;
+    pub fn sf_error(sndfile: SNDFILEhandle) -> Errors;
     pub fn sf_strerror(sndfile: SNDFILEhandle) -> *mut c_char;
     pub fn sf_error_number(errnum: i32) -> *mut c_char;
 
-    pub fn sf_perror(sndfile: SNDFILEhandle) -> Error;
+    pub fn sf_perror(sndfile: SNDFILEhandle) -> Errors;
     pub fn sf_error_str(sndfile: SNDFILEhandle, string: *mut c_char, len: i64);
 
-    pub fn sf_close(sndfile: SNDFILEhandle) -> Error;
+    pub fn sf_close(sndfile: SNDFILEhandle) -> Errors;
     pub fn sf_write_sync(sndfile: SNDFILEhandle);
 
     pub fn sf_read_short(sndfile: SNDFILEhandle, ptr: *mut i16, items: i64) -> i64;
@@ -228,6 +228,6 @@ extern "C" {
     pub fn sf_write_raw(sndfile: SNDFILEhandle, ptr: *mut c_void, bytes: i64) -> i64;
 
     pub fn sf_get_string(sndfile: SNDFILEhandle, str_type: i32) -> *mut c_char;
-    pub fn sf_set_string(sndfile: SNDFILEhandle, str_type: i32, string: *mut c_char) -> Error;
+    pub fn sf_set_string(sndfile: SNDFILEhandle, str_type: i32, string: *mut c_char) -> Errors;
 
 }

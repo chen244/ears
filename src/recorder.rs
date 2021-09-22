@@ -28,7 +28,7 @@ use std::{mem, thread};
 use openal::ffi;
 use record_context;
 use record_context::RecordContext;
-use sndfile::FormatType::{FormatPcm16, FormatWav};
+use sndfile::FormatTypes::{FormatPcm16, FormatWav};
 use sndfile::OpenMode::Write;
 use sndfile::{SndFile, SndInfo};
 use std::intrinsics::transmute;
